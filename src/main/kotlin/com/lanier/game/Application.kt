@@ -1,5 +1,6 @@
 package com.lanier.game
 
+import com.lanier.game.feature.user.installUserModule
 import com.lanier.game.plugins.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
@@ -13,4 +14,16 @@ fun main() {
 fun Application.module() {
     configureSerialization()
     configureRouting()
+
+    DatabaseFactory.init()
+
+    installFeatureModules()
 }
+
+/**
+ * install the feature modules in here
+ */
+fun Application.installFeatureModules() {
+    installUserModule()
+}
+
