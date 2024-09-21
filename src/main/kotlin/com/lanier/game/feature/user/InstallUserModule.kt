@@ -20,11 +20,11 @@ fun Application.installUserModule() {
         get("/get-user") {
             val account = call.request.queryParameters["account"]
             val password = call.request.queryParameters["password"]
-            if (account == null) {
+            if (account.isNullOrBlank()) {
                 call.respond(respError<UserModel>(message = "Missing account parameter"))
                 return@get
             }
-            if (password == null) {
+            if (password.isNullOrBlank()) {
                 call.respond(respError<UserModel>(message = "Missing password parameter"))
                 return@get
             }
