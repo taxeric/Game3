@@ -28,4 +28,5 @@ data class UserModel(
     val password: String,
     val username: String,
     val gender: Int,
+    val token: String = "",
 )

@@ -13,6 +13,7 @@ fun main() {
 
 fun Application.module() {
     configureSerialization()
+    configureJWT()
     configureRouting()
 
     DatabaseFactory.init()
