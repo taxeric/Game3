@@ -2,7 +2,6 @@ package com.lanier.game.feature.farm.land
 
 import com.lanier.game.DatabaseFactory
 import com.lanier.game.model.dto.Land
-import com.lanier.game.model.LandTable
 import org.jetbrains.exposed.sql.batchInsert
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction

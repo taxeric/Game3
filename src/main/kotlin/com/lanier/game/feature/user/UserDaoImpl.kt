@@ -1,7 +1,6 @@
 package com.lanier.game.feature.user
 
 import com.lanier.game.DatabaseFactory
-import com.lanier.game.model.UserTable
 import com.lanier.game.model.dto.UserRespDTOModel
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.insert

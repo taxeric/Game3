@@ -1,11 +1,7 @@
-package com.lanier.game.model
+package com.lanier.game.feature.user
 
 import org.jetbrains.exposed.sql.Table
 
-/**
- * Created by 幻弦让叶
- * Date 2024/9/21 22:38
- */
 private const val TABLE_USER = "user"
 
 object UserTable : Table(TABLE_USER) {

@@ -1,11 +1,7 @@
-package com.lanier.game.model
+package com.lanier.game.feature.farm.land
 
 import org.jetbrains.exposed.sql.Table
 
-/**
- * Created by 幻弦让叶
- * Date 2024/9/23 22:27
- */
 private const val TABLE_LAND = "land"
 
 object LandTable : Table(TABLE_LAND) {
