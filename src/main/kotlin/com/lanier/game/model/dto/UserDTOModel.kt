@@ -1,4 +1,4 @@
-package com.lanier.game.feature.user.dto
+package com.lanier.game.model.dto
 
 import kotlinx.serialization.Serializable
 import com.google.gson.annotations.SerializedName
@@ -15,4 +15,14 @@ data class UserRegisterDTO(
 
     @SerializedName("password")
     val password: String,
+)
+
+@Serializable
+data class UserRespDTOModel(
+    val id: Int,
+    val account: String,
+    val username: String,
+    val gender: Int,
+    val lands: List<Land>? = null,
+    val token: String = "",
 )

@@ -2,8 +2,10 @@ package com.lanier.game.feature.user
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import com.lanier.game.feature.user.dto.UserRegisterDTO
-import com.lanier.game.model.UserModel
+import com.lanier.game.feature.farm.land.LandDao
+import com.lanier.game.feature.farm.land.LandDaoImpl
+import com.lanier.game.model.dto.UserRegisterDTO
+import com.lanier.game.model.dto.UserRespDTOModel
 import com.lanier.game.model.respError
 import com.lanier.game.model.respSuccess
 import com.lanier.game.plugins.jwtIsuser
@@ -25,6 +27,7 @@ import java.util.Date
 fun Application.installUserModule() {
 
     val dao: UserDao = UserDaoImpl()
+    val landDao: LandDao = LandDaoImpl()
 
     routing {
         post("/login") {
@@ -35,19 +38,21 @@ fun Application.installUserModule() {
             val password = json["password"]?.jsonPrimitive?.content
 
             if (account.isNullOrBlank()) {
-                call.respond(respError<UserModel>(message = "Missing account parameter"))
+                call.respond(respError<UserRespDTOModel>(message = "Missing account parameter"))
                 return@post
             }
             if (password.isNullOrBlank()) {
-                call.respond(respError<UserModel>(message = "Missing password parameter"))
+                call.respond(respError<UserRespDTOModel>(message = "Missing password parameter"))
                 return@post
             }
 
             val user = dao.getUser(account = account, password = password)
             if (user == null) {
-                call.respond(respError<UserModel>(message = "User not found"))
+                call.respond(respError<UserRespDTOModel>(message = "User not found"))
                 return@post
             }
+
+            val landInfos = landDao.getLandsInfoByUid(user.id)
 
             val token = JWT.create()
                 .withIssuer(jwtIsuser)
@@ -55,9 +60,12 @@ fun Application.installUserModule() {
                 .withExpiresAt(Date(System.currentTimeMillis() + 1800000))
                 .sign(Algorithm.HMAC256(jwtSecret))
 
-            val respUser = user.copy(token = token)
+            val respUser = user.copy(
+                lands = landInfos,
+                token = token,
+            )
 
-            call.respond(respSuccess<UserModel>(data = respUser))
+            call.respond(respSuccess<UserRespDTOModel>(data = respUser))
         }
 
         post("/register") {
@@ -81,6 +89,12 @@ fun Application.installUserModule() {
 
             if (id == null || id < 0) {
                 call.respond(respError<Boolean>(code = -100, message = "register failed"))
+                return@post
+            }
+
+            val ids = landDao.registerLandForUser(id)
+            if (ids.isNullOrEmpty()) {
+                call.respond(respError<Boolean>(code = -101, message = "register failed"))
                 return@post
             }
 

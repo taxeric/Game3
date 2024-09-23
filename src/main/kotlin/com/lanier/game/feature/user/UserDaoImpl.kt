@@ -1,8 +1,8 @@
 package com.lanier.game.feature.user
 
 import com.lanier.game.DatabaseFactory
-import com.lanier.game.model.UserModel
 import com.lanier.game.model.UserTable
+import com.lanier.game.model.dto.UserRespDTOModel
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -10,7 +10,7 @@ import org.jetbrains.exposed.sql.update
 import java.util.UUID
 
 class UserDaoImpl : UserDao {
-    override suspend fun getUser(account: String, password: String): UserModel? {
+    override suspend fun getUser(account: String, password: String): UserRespDTOModel? {
         return DatabaseFactory.process {
             val resultRow = transaction {
                 UserTable
@@ -18,7 +18,6 @@ class UserDaoImpl : UserDao {
                         columns = listOf(
                             UserTable.id,
                             UserTable.account,
-                            UserTable.password,
                             UserTable.username,
                             UserTable.gender,
                         )
@@ -28,10 +27,9 @@ class UserDaoImpl : UserDao {
                     .singleOrNull()
             }
             resultRow ?: return@process null
-            UserModel(
+            UserRespDTOModel(
                 id = resultRow[UserTable.id],
                 account = resultRow[UserTable.account],
-                password = resultRow[UserTable.password],
                 username = resultRow[UserTable.username],
                 gender = resultRow[UserTable.gender],
             )

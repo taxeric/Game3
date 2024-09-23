@@ -1,6 +1,6 @@
 package com.lanier.game.feature.user
 
-import com.lanier.game.model.UserModel
+import com.lanier.game.model.dto.UserRespDTOModel
 
 /**
  * Created by 幻弦让叶
@@ -8,7 +8,7 @@ import com.lanier.game.model.UserModel
  */
 interface UserDao {
 
-    suspend fun getUser(account: String, password: String): UserModel?
+    suspend fun getUser(account: String, password: String): UserRespDTOModel?
 
     suspend fun insertUser(uname: String, pword: String): Int?
 }
