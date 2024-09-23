@@ -12,9 +12,9 @@ const val TABLE_NAME = "user"
 object UserTable : Table(TABLE_NAME) {
 
     val id = integer("id").autoIncrement()
-    val account = varchar("account", 20).uniqueIndex()
-    val password = varchar("password", 20)
-    val username = varchar("username", 50)
+    val account = varchar("account", 50).uniqueIndex()
+    val username = varchar("username", 20)
+    val password = varchar("password", 30)
     val gender = integer("gender")
 
     override val primaryKey: PrimaryKey?

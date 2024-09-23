@@ -9,4 +9,6 @@ import com.lanier.game.model.UserModel
 interface UserDao {
 
     suspend fun getUser(account: String, password: String): UserModel?
+
+    suspend fun insertUser(uname: String, pword: String): Int?
 }

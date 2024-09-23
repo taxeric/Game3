@@ -24,9 +24,9 @@ object DatabaseFactory {
     }
 
     /**
-     * query data
+     * run blocking data
      */
-    suspend fun <T> query(block: suspend () -> T): T? {
+    suspend fun <T> process(block: suspend () -> T): T? {
         return newSuspendedTransaction(Dispatchers.IO) {
             block()
         }

@@ -2,6 +2,7 @@ package com.lanier.game.feature.user
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import com.lanier.game.feature.user.dto.UserRegisterDTO
 import com.lanier.game.model.UserModel
 import com.lanier.game.model.respError
 import com.lanier.game.model.respSuccess
@@ -57,6 +58,33 @@ fun Application.installUserModule() {
             val respUser = user.copy(token = token)
 
             call.respond(respSuccess<UserModel>(data = respUser))
+        }
+
+        post("/register") {
+            val registerDto = try {
+                val receiveText = call.receiveText()
+                Json.decodeFromString<UserRegisterDTO>(receiveText)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
+
+            registerDto?: run {
+                call.respond(respError<Boolean>(message = "register failed"))
+                return@post
+            }
+
+            val username = registerDto.username
+            val password = registerDto.password
+
+            val id = dao.insertUser(username, password)
+
+            if (id == null || id < 0) {
+                call.respond(respError<Boolean>(code = -100, message = "register failed"))
+                return@post
+            }
+
+            call.respond(respSuccess<Boolean>(data = true))
         }
     }
 }
