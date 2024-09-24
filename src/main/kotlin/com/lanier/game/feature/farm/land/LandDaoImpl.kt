@@ -2,9 +2,12 @@ package com.lanier.game.feature.farm.land
 
 import com.lanier.game.DatabaseFactory
 import com.lanier.game.model.dto.Land
+import com.lanier.game.model.dto.LandPlantDto
+import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.batchInsert
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.update
 
 /**
  * Created by 幻弦让叶
@@ -74,6 +77,26 @@ class LandDaoImpl : LandDao {
                 )
             }
             lands
+        }
+    }
+
+    override suspend fun getLandStatusByLandId(userId: Int, landId: Int): Int? {
+        return DatabaseFactory.process {
+            val resultRow = transaction {
+                LandTable
+                    .select(LandTable.status)
+                    .andWhere { LandTable.id eq landId }
+                    .andWhere { LandTable.userId eq userId }
+                    .singleOrNull()
+            }
+            resultRow ?: return@process null
+            return@process resultRow[LandTable.status]
+        }
+    }
+
+    override suspend fun updateLandInfo(userId: Int, land: LandPlantDto): Int? {
+        return DatabaseFactory.process {
+            return@process null
         }
     }
 }

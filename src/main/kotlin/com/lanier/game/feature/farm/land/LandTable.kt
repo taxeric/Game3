@@ -8,7 +8,7 @@ object LandTable : Table(TABLE_LAND) {
 
     val id = integer("id").autoIncrement()
     val userId = integer("user_id")
-    val cropId = integer("crop_id")
+    val seedId = integer("seed_id")
     val toNextStageRemainingTime = long("to_next_stage_remaining_time")
     val lastHarvestTime = long("last_harvest_time")
     val maxHarvestCount = integer("max_harvest_count")

@@ -46,3 +46,10 @@ data class Land(
         const val IDLE = 3
     }
 }
+
+@Serializable
+data class LandPlantDto(
+    val userId: Int,
+    val landId: Int,
+    val seedId: Int,
+)
