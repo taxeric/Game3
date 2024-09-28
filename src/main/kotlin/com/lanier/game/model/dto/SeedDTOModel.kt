@@ -11,7 +11,6 @@ import kotlinx.serialization.Transient
  */
 @Serializable
 data class SeedRespDTOModel(
-    val seedId: Int,
     val cropId: Int,
     val maxHarvestCount: Int,
     val singleHarvestExp: Int,

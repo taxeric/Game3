@@ -27,7 +27,6 @@ class SeedDaoImpl : SeedDao {
 
     private fun ResultRow.toSeed(): SeedRespDTOModel {
         return SeedRespDTOModel(
-            seedId = this[SeedTable.id],
             cropId = this[SeedTable.cropId],
             maxHarvestCount = this[SeedTable.maxHarvestCount],
             singleHarvestAmount = this[SeedTable.singleHarvestAmount],
@@ -38,6 +37,7 @@ class SeedDaoImpl : SeedDao {
         ).apply {
             name = this@toSeed[SeedTable.name]
             price = this@toSeed[SeedTable.price]
+            itemId = this@toSeed[SeedTable.id]
         }
     }
 }

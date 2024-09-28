@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class WarehouseRespDTOModel<T: BaseItem>(
-    val id: Int,
+    val warehouseId: Int,
     val item: T,
     val quantity: Int,
 )

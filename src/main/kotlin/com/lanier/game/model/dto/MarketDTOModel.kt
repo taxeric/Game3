@@ -23,8 +23,6 @@ data class MarketReqDTOModel(
 data class MarketRespDTOModel(
     val id: Int,
     val isListed: Boolean,
-    val itemType: Int = -1,
-    val itemId: Int = -1,
 ): BaseItem() {
 
     fun validItem(): Boolean {

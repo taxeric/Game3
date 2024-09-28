@@ -19,5 +19,5 @@ interface WarehouseDao {
         quantity: Int
     ): Boolean?
 
-    suspend fun getMerchandiseByType(type: Int): List<WarehouseRespDTOModel<out BaseItem>>?
+    suspend fun getMerchandiseByType(type: Int): List<WarehouseRespDTOModel<BaseItem>>?
 }

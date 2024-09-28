@@ -67,12 +67,12 @@ class MarketDaoImpl : MarketDao {
         return MarketRespDTOModel(
             id = this[MarketTable.id],
             isListed = this[MarketTable.isListed],
-            itemId = this[MarketTable.refItemId],
-            itemType = this[MarketTable.itemType],
         ).apply {
             name = this@toMarketItem[MarketTable.name]
             price = this@toMarketItem[MarketTable.price]
             desc = this@toMarketItem[MarketTable.desc]
+            itemId = this@toMarketItem[MarketTable.refItemId]
+            itemType = this@toMarketItem[MarketTable.itemType]
         }
     }
 }

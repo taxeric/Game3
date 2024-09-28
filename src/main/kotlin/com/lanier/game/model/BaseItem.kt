@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
  * Date 2024/9/28 20:13
  */
 @Serializable
-abstract class BaseItem {
+open class BaseItem {
 
     companion object {
 
@@ -21,6 +21,8 @@ abstract class BaseItem {
         }
     }
 
+    var itemId: Int = -1
+    var itemType: Int = -1
     var name: String = ""
     var price: Int = 0
     var desc: String? = ""

@@ -67,7 +67,7 @@ class WarehouseDaoImpl : WarehouseDao {
         }
     }
 
-    override suspend fun getMerchandiseByType(type: Int): List<WarehouseRespDTOModel<out BaseItem>>? {
+    override suspend fun getMerchandiseByType(type: Int): List<WarehouseRespDTOModel<BaseItem>>? {
         return DatabaseFactory.process {
             if (BaseItem.validType(type).not()) {
                 return@process null
@@ -82,7 +82,6 @@ class WarehouseDaoImpl : WarehouseDao {
                         .toList()
                         .map {
                             val seed = SeedRespDTOModel(
-                                seedId = it[SeedTable.id],
                                 cropId = it[SeedTable.cropId],
                                 maxHarvestCount = it[SeedTable.maxHarvestCount],
                                 singleHarvestExp = it[SeedTable.singleHarvestExp],
@@ -93,9 +92,11 @@ class WarehouseDaoImpl : WarehouseDao {
                             ).apply {
                                 name = it[SeedTable.name]
                                 price = it[SeedTable.price]
+                                itemId = it[SeedTable.id]
+                                itemType = BaseItem.TYPE_SEED
                             }
                             WarehouseRespDTOModel(
-                                id = it[WarehouseTable.id],
+                                warehouseId = it[WarehouseTable.id],
                                 quantity = it[WarehouseTable.quantity],
                                 item = seed
                             )
