@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 data class Land(
     val landId: Int = 0,
     val userId: Int,
-    val cropId: Int = 0,
+    val seedId: Int = 0,
     val bpkId: Int = 0,
 
     val status: Int = UNLOCK,

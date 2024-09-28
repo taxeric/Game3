@@ -15,5 +15,5 @@ interface LandDao {
 
     suspend fun getLandStatusByLandId(userId: Int, landId: Int): Int?
 
-    suspend fun updateLandInfo(userId: Int, land: LandPlantDto): Int?
+    suspend fun plant(land: LandPlantDto): Boolean?
 }

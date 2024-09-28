@@ -23,6 +23,7 @@ data class UserRespDTOModel(
     val account: String,
     val username: String,
     val gender: Int,
+    val balance: Int,
     val lands: List<Land>? = null,
     val token: String = "",
 )

@@ -17,7 +17,8 @@ object DatabaseFactory {
 
     fun init() {
         val driverClassName = DRIVER
-        val jdbcUrl = "jdbc:mysql://localhost:3306/$DEFAULT_DATABASE_NAME?serverTimezone=GMT%2B8&characterEncoding=utf8&useSSL=true"
+        val jdbcUrl =
+            "jdbc:mysql://localhost:3306/$DEFAULT_DATABASE_NAME?serverTimezone=GMT%2B8&characterEncoding=utf8&useSSL=true"
         val username = USERNAME
         val password = PASSWORD
         Database.connect(jdbcUrl, driverClassName, username, password)
@@ -28,7 +29,11 @@ object DatabaseFactory {
      */
     suspend fun <T> process(block: suspend () -> T): T? {
         return newSuspendedTransaction(Dispatchers.IO) {
-            block()
+            runCatching {
+                block.invoke()
+            }.onFailure {
+                println(">>>> failed ${it.message}")
+            }.getOrNull()
         }
     }
 }

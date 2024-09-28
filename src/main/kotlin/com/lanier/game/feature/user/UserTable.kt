@@ -11,7 +11,8 @@ object UserTable : Table(TABLE_USER) {
     val username = varchar("username", 20)
     val password = varchar("password", 30)
     val gender = integer("gender")
+    val balance = integer("balance")
 
-    override val primaryKey: PrimaryKey?
+    override val primaryKey: PrimaryKey
         get() = PrimaryKey(id)
 }

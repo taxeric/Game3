@@ -10,5 +10,11 @@ interface UserDao {
 
     suspend fun getUser(account: String, password: String): UserRespDTOModel?
 
+    suspend fun getUserById(id: Int): UserRespDTOModel?
+
+    suspend fun getBalanceById(id: Int): Int?
+
     suspend fun insertUser(uname: String, pword: String): Int?
+
+    suspend fun updateBalanceById(id: Int, balance: Int): Boolean?
 }

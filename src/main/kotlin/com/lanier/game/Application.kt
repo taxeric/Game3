@@ -1,5 +1,9 @@
 package com.lanier.game
 
+import com.lanier.game.feature.farm.land.installLandModule
+import com.lanier.game.feature.farm.market.installMarketModule
+import com.lanier.game.feature.farm.order.installOrderModule
+import com.lanier.game.feature.farm.warehouse.installWarehouseModule
 import com.lanier.game.feature.user.installUserModule
 import com.lanier.game.plugins.*
 import io.ktor.server.application.*
@@ -26,5 +30,9 @@ fun Application.module() {
  */
 fun Application.installFeatureModules() {
     installUserModule()
+    installMarketModule()
+    installLandModule()
+    installOrderModule()
+    installWarehouseModule()
 }
 

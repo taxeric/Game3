@@ -33,7 +33,7 @@ class LandDaoImpl : LandDao {
                     shouldReturnGeneratedValues = true
                 ) { value ->
                     this[LandTable.userId] = value.userId
-                    this[LandTable.cropId] = value.cropId
+                    this[LandTable.seedId] = value.seedId
                     this[LandTable.toNextStageRemainingTime] = value.nextStageRemainTime
                     this[LandTable.lastHarvestTime] = value.lastHarvestTime
                     this[LandTable.maxHarvestCount] = value.maxHarvestCount
@@ -68,7 +68,7 @@ class LandDaoImpl : LandDao {
                 Land(
                     landId = row[LandTable.id],
                     userId = row[LandTable.userId],
-                    cropId = row[LandTable.cropId],
+                    seedId = row[LandTable.seedId],
                     nextStageRemainTime = row[LandTable.toNextStageRemainingTime],
                     lastHarvestTime = row[LandTable.lastHarvestTime],
                     maxHarvestCount = row[LandTable.maxHarvestCount],
@@ -94,9 +94,16 @@ class LandDaoImpl : LandDao {
         }
     }
 
-    override suspend fun updateLandInfo(userId: Int, land: LandPlantDto): Int? {
+    override suspend fun plant(land: LandPlantDto): Boolean? {
         return DatabaseFactory.process {
-            return@process null
+            return@process transaction {
+                LandTable.update({ LandTable.id eq land.landId }) { statement ->
+                    statement[LandTable.status] = Land.PLANTING
+                    statement[LandTable.seedId] = land.seedId
+                }
+
+                true
+            }
         }
     }
 }

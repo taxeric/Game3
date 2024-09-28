@@ -65,7 +65,7 @@ fun Application.installUserModule() {
                 token = token,
             )
 
-            call.respond(respSuccess<UserRespDTOModel>(data = respUser))
+            call.respond(respSuccess(data = respUser))
         }
 
         post("/register") {
@@ -98,7 +98,7 @@ fun Application.installUserModule() {
                 return@post
             }
 
-            call.respond(respSuccess<Boolean>(data = true))
+            call.respond(respSuccess(data = true))
         }
     }
 }

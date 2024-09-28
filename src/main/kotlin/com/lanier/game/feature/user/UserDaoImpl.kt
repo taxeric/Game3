@@ -19,6 +19,7 @@ class UserDaoImpl : UserDao {
                             UserTable.account,
                             UserTable.username,
                             UserTable.gender,
+                            UserTable.balance,
                         )
                     )
                     .andWhere { UserTable.account eq account }
@@ -31,7 +32,48 @@ class UserDaoImpl : UserDao {
                 account = resultRow[UserTable.account],
                 username = resultRow[UserTable.username],
                 gender = resultRow[UserTable.gender],
+                balance = resultRow[UserTable.balance],
             )
+        }
+    }
+
+    override suspend fun getUserById(id: Int): UserRespDTOModel? {
+        return DatabaseFactory.process {
+            val resultRow = transaction {
+                UserTable
+                    .select(
+                        columns = listOf(
+                            UserTable.id,
+                            UserTable.account,
+                            UserTable.username,
+                            UserTable.gender,
+                            UserTable.balance,
+                        )
+                    )
+                    .where { UserTable.id eq id }
+                    .singleOrNull()
+            }
+            resultRow ?: return@process null
+            UserRespDTOModel(
+                id = resultRow[UserTable.id],
+                account = resultRow[UserTable.account],
+                username = resultRow[UserTable.username],
+                gender = resultRow[UserTable.gender],
+                balance = resultRow[UserTable.balance],
+            )
+        }
+    }
+
+    override suspend fun getBalanceById(id: Int): Int? {
+        return DatabaseFactory.process {
+            transaction {
+                val row = UserTable
+                    .select(UserTable.balance)
+                    .where { UserTable.id eq id }
+                    .singleOrNull()
+                if (row == null) return@transaction null
+                row[UserTable.balance]
+            }
         }
     }
 
@@ -54,6 +96,17 @@ class UserDaoImpl : UserDao {
                 }
 
                 newId
+            }
+        }
+    }
+
+    override suspend fun updateBalanceById(id: Int, balance: Int): Boolean? {
+        return DatabaseFactory.process {
+            transaction {
+                UserTable.update({ UserTable.id eq id }) { statement ->
+                    statement[UserTable.balance] = balance
+                }
+                true
             }
         }
     }
