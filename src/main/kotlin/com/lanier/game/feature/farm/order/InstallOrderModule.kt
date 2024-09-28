@@ -80,7 +80,7 @@ fun Application.installOrderModule() {
                 userId = orderDto.userId,
                 itemType = marketItem.itemType,
                 itemId = marketItem.itemId,
-                quality = orderDto.quantity
+                quantity = orderDto.quantity
             )
             if (addToWarehouseResult != true) {
                 //todo 还原余额

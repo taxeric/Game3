@@ -17,6 +17,6 @@ object MarketTable : Table(TABLE_MARKET) {
     val refItemId = integer("ref_item_id")
     val name = varchar("name", 50)
     val price = integer("price")
-    val desc = varchar("desc", 100)
+    val desc = varchar("desc", 100).default("")
     val isListed = bool("is_listed").default(true)
 }

@@ -35,6 +35,9 @@ class SeedDaoImpl : SeedDao {
             season = this[SeedTable.season],
             stageInfo = this[SeedTable.stageInfo],
             plantLevel = this[SeedTable.plantLevel],
-        )
+        ).apply {
+            name = this@toSeed[SeedTable.name]
+            price = this@toSeed[SeedTable.price]
+        }
     }
 }

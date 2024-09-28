@@ -9,14 +9,14 @@ interface WarehouseDao {
         userId: Int,
         itemType: Int,
         itemId: Int,
-        quality: Int
+        quantity: Int
     ): Boolean?
 
     suspend fun consume(
         userId: Int,
         itemType: Int,
         itemId: Int,
-        quality: Int
+        quantity: Int
     ): Boolean?
 
     suspend fun getMerchandiseByType(type: Int): List<WarehouseRespDTOModel<out BaseItem>>?

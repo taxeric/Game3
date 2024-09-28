@@ -35,6 +35,13 @@ fun Application.installWarehouseModule() {
             }
 
             val merchandises = warehouseDao.getMerchandiseByType(queryType)
+            if (merchandises == null) {
+                call.respond(
+                    respError<Boolean>(message = "no items of type [$type] were found")
+                )
+                return@get
+            }
+
             call.respond(
                 respSuccess(data = merchandises)
             )

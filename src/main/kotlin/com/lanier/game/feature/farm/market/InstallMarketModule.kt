@@ -35,6 +35,13 @@ fun Application.installMarketModule() {
             }
 
             val products = marketDao.getAllProductsByType(queryType)
+            if (products == null) {
+                call.respond(
+                    respError<Boolean>(message = "no produces of type [$type] were found")
+                )
+                return@get
+            }
+
             call.respond(
                 respSuccess(data = products)
             )

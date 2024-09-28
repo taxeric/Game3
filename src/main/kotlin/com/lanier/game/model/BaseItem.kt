@@ -23,8 +23,5 @@ abstract class BaseItem {
 
     var name: String = ""
     var price: Int = 0
-    var desc: String = ""
-
-    open val itemType: Int = -1
-    open val itemId: Int = -1
+    var desc: String? = ""
 }

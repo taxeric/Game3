@@ -1,6 +1,7 @@
 package com.lanier.game.feature.farm.market
 
 import com.lanier.game.DatabaseFactory
+import com.lanier.game.model.BaseItem
 import com.lanier.game.model.dto.MarketReqDTOModel
 import com.lanier.game.model.dto.MarketRespDTOModel
 import org.jetbrains.exposed.sql.ResultRow
@@ -30,6 +31,9 @@ class MarketDaoImpl : MarketDao {
 
     override suspend fun getAllProductsByType(type: Int): List<MarketRespDTOModel>? {
         return DatabaseFactory.process {
+            if (BaseItem.validType(type).not()) {
+                return@process null
+            }
             val resultRows = transaction {
                 MarketTable
                     .selectAll()
@@ -63,8 +67,8 @@ class MarketDaoImpl : MarketDao {
         return MarketRespDTOModel(
             id = this[MarketTable.id],
             isListed = this[MarketTable.isListed],
-            mItemId = this[MarketTable.refItemId],
-            mItemType = this[MarketTable.itemType],
+            itemId = this[MarketTable.refItemId],
+            itemType = this[MarketTable.itemType],
         ).apply {
             name = this@toMarketItem[MarketTable.name]
             price = this@toMarketItem[MarketTable.price]

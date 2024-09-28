@@ -2,6 +2,7 @@ package com.lanier.game.model.dto
 
 import com.lanier.game.model.BaseItem
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 /**
  * Desc:
@@ -22,15 +23,9 @@ data class MarketReqDTOModel(
 data class MarketRespDTOModel(
     val id: Int,
     val isListed: Boolean,
-    val mItemType: Int,
-    val mItemId: Int,
+    val itemType: Int = -1,
+    val itemId: Int = -1,
 ): BaseItem() {
-
-    override val itemType: Int
-        get() = mItemType
-
-    override val itemId: Int
-        get() = mItemId
 
     fun validItem(): Boolean {
         return isListed && itemType > 0 && itemId > 0

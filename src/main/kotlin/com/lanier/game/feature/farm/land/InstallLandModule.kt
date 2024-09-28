@@ -66,7 +66,7 @@ fun Application.installLandModule() {
                 userId = landPlantDto.userId,
                 itemType = WarehouseTable.TYPE_SEED,
                 itemId = landPlantDto.seedId,
-                quality = 1
+                quantity = 1
             )
 
             if (consumeResult != true) {

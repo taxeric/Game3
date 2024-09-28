@@ -15,7 +15,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
  * Date 2024/9/26 23:13
  */
 class WarehouseDaoImpl : WarehouseDao {
-    override suspend fun increase(userId: Int, itemType: Int, itemId: Int, quality: Int): Boolean? {
+    override suspend fun increase(userId: Int, itemType: Int, itemId: Int, quantity: Int): Boolean? {
         return DatabaseFactory.process {
             return@process transaction {
                 val itemRow = obtainWarehouseItem(userId, itemType, itemId)
@@ -32,7 +32,7 @@ class WarehouseDaoImpl : WarehouseDao {
                 } else {
                     val warehouseId = itemRow[WarehouseTable.id]
                     var tempQuantity = itemRow[WarehouseTable.quantity]
-                    tempQuantity += quality
+                    tempQuantity += quantity
                     WarehouseTable.update({ WarehouseTable.id eq warehouseId }) { statement ->
                         statement[WarehouseTable.quantity] = tempQuantity
                     }
@@ -47,14 +47,14 @@ class WarehouseDaoImpl : WarehouseDao {
         userId: Int,
         itemType: Int,
         itemId: Int,
-        quality: Int,
+        quantity: Int,
     ): Boolean? {
         return DatabaseFactory.process {
             return@process transaction {
                 val itemRow = obtainWarehouseItem(userId, itemType, itemId) ?: return@transaction false
 
                 var tempQuantity = itemRow[WarehouseTable.quantity]
-                tempQuantity -= quality
+                tempQuantity -= quantity
                 if (tempQuantity <= 0) {
                     tempQuantity = 0
                 }
@@ -90,7 +90,10 @@ class WarehouseDaoImpl : WarehouseDao {
                                 season = it[SeedTable.season],
                                 stageInfo = it[SeedTable.stageInfo],
                                 plantLevel = it[SeedTable.plantLevel],
-                            )
+                            ).apply {
+                                name = it[SeedTable.name]
+                                price = it[SeedTable.price]
+                            }
                             WarehouseRespDTOModel(
                                 id = it[WarehouseTable.id],
                                 quantity = it[WarehouseTable.quantity],

@@ -2,6 +2,7 @@ package com.lanier.game.model.dto
 
 import com.lanier.game.model.BaseItem
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 /**
  * Desc:
@@ -18,11 +19,4 @@ data class SeedRespDTOModel(
     val season: Int,
     val stageInfo: String,
     val plantLevel: Int,
-): BaseItem() {
-
-    override val itemType: Int
-        get() = TYPE_SEED
-
-    override val itemId: Int
-        get() = seedId
-}
+): BaseItem()
