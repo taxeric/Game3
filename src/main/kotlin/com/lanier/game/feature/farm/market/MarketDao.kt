@@ -1,6 +1,6 @@
 package com.lanier.game.feature.farm.market
 
-import com.lanier.game.model.dto.MarketReqDTOModel
+import com.lanier.game.model.dto.MarketAddReqDTOModel
 import com.lanier.game.model.dto.MarketRespDTOModel
 
 /**
@@ -14,5 +14,5 @@ interface MarketDao {
 
     suspend fun getAllProductsByType(type: Int) : List<MarketRespDTOModel>?
 
-    suspend fun addProduct(model: MarketReqDTOModel) : Boolean?
+    suspend fun addProduct(model: MarketAddReqDTOModel) : Boolean?
 }

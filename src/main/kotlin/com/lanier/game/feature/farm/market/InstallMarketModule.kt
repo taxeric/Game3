@@ -1,10 +1,13 @@
 package com.lanier.game.feature.farm.market
 
+import com.lanier.game.model.dto.MarketAddReqDTOModel
 import com.lanier.game.model.respError
 import com.lanier.game.model.respSuccess
 import io.ktor.server.application.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.serialization.json.Json
 
 /**
  * Desc:
@@ -45,6 +48,29 @@ fun Application.installMarketModule() {
             call.respond(
                 respSuccess(data = products)
             )
+        }
+
+        post("/add-product") {
+            val addDto = try {
+                val json = call.receiveText()
+                Json.decodeFromString<MarketAddReqDTOModel>(json)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
+
+            addDto?: run {
+                call.respond(respError<Boolean>(code = -100, message = "add product failed"))
+                return@post
+            }
+
+            val result = marketDao.addProduct(addDto)
+            if (result != true) {
+                call.respond(respError<Boolean>(code = -101, message = "product already exists"))
+                return@post
+            }
+
+            call.respond(respSuccess(data = true))
         }
     }
 }

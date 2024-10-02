@@ -2,7 +2,6 @@ package com.lanier.game.model.dto
 
 import com.lanier.game.model.BaseItem
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 
 /**
  * Desc:
@@ -10,7 +9,7 @@ import kotlinx.serialization.Transient
  * Date 2024/9/28 18:55
  */
 @Serializable
-data class MarketReqDTOModel(
+data class MarketAddReqDTOModel(
     val typeId: Int,
     val itemId: Int,
     val name: String,

@@ -2,7 +2,7 @@ package com.lanier.game.feature.farm.market
 
 import com.lanier.game.DatabaseFactory
 import com.lanier.game.model.BaseItem
-import com.lanier.game.model.dto.MarketReqDTOModel
+import com.lanier.game.model.dto.MarketAddReqDTOModel
 import com.lanier.game.model.dto.MarketRespDTOModel
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
@@ -47,10 +47,10 @@ class MarketDaoImpl : MarketDao {
         }
     }
 
-    override suspend fun addProduct(model: MarketReqDTOModel): Boolean? {
+    override suspend fun addProduct(model: MarketAddReqDTOModel): Boolean? {
         return DatabaseFactory.process {
             transaction {
-                val newId = MarketTable.insert { statement ->
+                val resultRow = MarketTable.insert { statement ->
                     statement[itemType] = model.typeId
                     statement[refItemId] = model.itemId
                     statement[name] = model.name
@@ -58,7 +58,8 @@ class MarketDaoImpl : MarketDao {
                     statement[desc] = model.desc
                     statement[isListed] = model.isListed
                 }
-                true
+                val newId = resultRow[MarketTable.id]
+                newId > 0
             }
         }
     }
