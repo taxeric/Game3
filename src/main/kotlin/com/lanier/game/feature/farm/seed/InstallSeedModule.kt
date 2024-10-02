@@ -1,6 +1,7 @@
 package com.lanier.game.feature.farm.seed
 
 import com.lanier.game.model.dto.SeedAddReqDTOModel
+import com.lanier.game.model.dto.SeedRespDTOModel
 import com.lanier.game.model.dto.SeedStageInfoDTOModel
 import com.lanier.game.model.respError
 import com.lanier.game.model.respSuccess
@@ -58,6 +59,22 @@ fun Application.installSeedModule() {
             }
 
             call.respond(respSuccess(data = true))
+        }
+
+        get("/get-seed") {
+            val seedId = call.request.queryParameters["id"]?.toIntOrNull()
+            if (seedId == null) {
+                call.respond(respError<SeedRespDTOModel>(message = "invalid seed id"))
+                return@get
+            }
+
+            val seed = seedDao.getSeedById(seedId)
+            if (seed == null) {
+                call.respond(respError<SeedRespDTOModel>(code = -100, message = "invalid seed id"))
+                return@get
+            }
+
+            call.respond(respSuccess(data = seed))
         }
     }
 }
