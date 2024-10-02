@@ -14,7 +14,7 @@ object SeedTable : Table(TABLE_SEED) {
     val cropId = integer("crop_id")
     val name = varchar("name", 50)
     val maxHarvestCount = integer("max_harvest_count")
-    val singleHarvestExp = integer("single_harvest_exp")
+    val cropExpPer = integer("crop_exp_per")
     val singleHarvestAmount = integer("single_harvest_amount")
     val season = integer("season").default(0)
     val price = integer("price")

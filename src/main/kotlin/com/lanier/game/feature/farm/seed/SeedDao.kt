@@ -1,5 +1,6 @@
 package com.lanier.game.feature.farm.seed
 
+import com.lanier.game.model.dto.SeedAddReqDTOModel
 import com.lanier.game.model.dto.SeedRespDTOModel
 
 /**
@@ -10,4 +11,6 @@ import com.lanier.game.model.dto.SeedRespDTOModel
 interface SeedDao {
 
     suspend fun getSeedById(id: Int): SeedRespDTOModel?
+
+    suspend fun addSeed(seed: SeedAddReqDTOModel): Boolean?
 }

@@ -84,7 +84,7 @@ class WarehouseDaoImpl : WarehouseDao {
                             val seed = SeedRespDTOModel(
                                 cropId = it[SeedTable.cropId],
                                 maxHarvestCount = it[SeedTable.maxHarvestCount],
-                                singleHarvestExp = it[SeedTable.singleHarvestExp],
+                                cropExpPer = it[SeedTable.cropExpPer],
                                 singleHarvestAmount = it[SeedTable.singleHarvestAmount],
                                 season = it[SeedTable.season],
                                 stageInfo = it[SeedTable.stageInfo],
