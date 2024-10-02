@@ -1,5 +1,6 @@
 package com.lanier.game.feature.user
 
+import com.lanier.game.model.dto.UserRegisterRespDTOModel
 import com.lanier.game.model.dto.UserRespDTOModel
 
 /**
@@ -14,7 +15,7 @@ interface UserDao {
 
     suspend fun getBalanceById(id: Int): Int?
 
-    suspend fun insertUser(uname: String, pword: String): Int?
+    suspend fun insertUser(uname: String, pword: String): UserRegisterRespDTOModel?
 
     suspend fun updateBalanceById(id: Int, balance: Int): Boolean?
 }

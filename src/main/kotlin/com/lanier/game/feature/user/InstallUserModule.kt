@@ -4,7 +4,8 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.lanier.game.feature.farm.land.LandDao
 import com.lanier.game.feature.farm.land.LandDaoImpl
-import com.lanier.game.model.dto.UserRegisterDTO
+import com.lanier.game.model.dto.UserRegisterReqDTOModel
+import com.lanier.game.model.dto.UserRegisterRespDTOModel
 import com.lanier.game.model.dto.UserRespDTOModel
 import com.lanier.game.model.respError
 import com.lanier.game.model.respSuccess
@@ -71,34 +72,34 @@ fun Application.installUserModule() {
         post("/register") {
             val registerDto = try {
                 val receiveText = call.receiveText()
-                Json.decodeFromString<UserRegisterDTO>(receiveText)
+                Json.decodeFromString<UserRegisterReqDTOModel>(receiveText)
             } catch (e: Exception) {
                 e.printStackTrace()
                 null
             }
 
             registerDto?: run {
-                call.respond(respError<Boolean>(message = "register failed"))
+                call.respond(respError<UserRegisterRespDTOModel>(message = "register failed"))
                 return@post
             }
 
             val username = registerDto.username
             val password = registerDto.password
 
-            val id = dao.insertUser(username, password)
+            val model = dao.insertUser(username, password)
 
-            if (id == null || id < 0) {
-                call.respond(respError<Boolean>(code = -100, message = "register failed"))
+            if (model == null || model.validAccount.not()) {
+                call.respond(respError<UserRegisterRespDTOModel>(code = -100, message = "register failed"))
                 return@post
             }
 
-            val ids = landDao.registerLandForUser(id)
+            val ids = landDao.registerLandForUser(model.id)
             if (ids.isNullOrEmpty()) {
-                call.respond(respError<Boolean>(code = -101, message = "register failed"))
+                call.respond(respError<UserRegisterRespDTOModel>(code = -101, message = "register failed"))
                 return@post
             }
 
-            call.respond(respSuccess(data = true))
+            call.respond(respSuccess(data = model))
         }
     }
 }

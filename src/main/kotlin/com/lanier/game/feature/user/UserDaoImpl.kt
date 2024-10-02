@@ -1,6 +1,7 @@
 package com.lanier.game.feature.user
 
 import com.lanier.game.DatabaseFactory
+import com.lanier.game.model.dto.UserRegisterRespDTOModel
 import com.lanier.game.model.dto.UserRespDTOModel
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.insert
@@ -80,7 +81,7 @@ class UserDaoImpl : UserDao {
     override suspend fun insertUser(
         uname: String,
         pword: String,
-    ): Int? {
+    ): UserRegisterRespDTOModel? {
         return DatabaseFactory.process {
             transaction {
                 val insertStatement = UserTable.insert { statement ->
@@ -95,7 +96,10 @@ class UserDaoImpl : UserDao {
                     it[account] = newAccount
                 }
 
-                newId
+                UserRegisterRespDTOModel(
+                    id = newId,
+                    account = newAccount,
+                )
             }
         }
     }
