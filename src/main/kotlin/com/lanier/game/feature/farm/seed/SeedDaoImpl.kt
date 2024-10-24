@@ -6,9 +6,11 @@ import com.lanier.game.model.dto.SeedRespDTOModel
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.update
 
 /**
  * Desc:
@@ -29,11 +31,27 @@ class SeedDaoImpl : SeedDao {
         }
     }
 
-    override suspend fun addSeed(seed: SeedAddReqDTOModel): Boolean? {
+    override suspend fun upsertSeed(seed: SeedAddReqDTOModel): Boolean? {
         return DatabaseFactory.process {
             transaction {
-                val row = SeedTable
-                    .insert { statement ->
+                if (seed.id == null) {
+                    val row = SeedTable
+                        .insert { statement ->
+                            statement[name] = seed.name
+                            statement[maxHarvestCount] = seed.maxHarvestCount
+                            statement[cropExpPer] = seed.cropExpPer
+                            statement[singleHarvestAmount] = seed.singleHarvestAmount
+                            statement[season] = seed.season
+                            statement[price] = seed.price
+                            statement[stageInfo] = seed.stageInfo
+                            statement[plantLevel] = seed.plantLevel
+                            statement[cropId] = seed.cropId
+                        }
+
+                    row[SeedTable.id] > 0
+                } else {
+                    val result = SeedTable.update({ SeedTable.id eq seed.id }) { statement ->
+                        statement[cropId] = seed.cropId
                         statement[name] = seed.name
                         statement[maxHarvestCount] = seed.maxHarvestCount
                         statement[cropExpPer] = seed.cropExpPer
@@ -42,10 +60,9 @@ class SeedDaoImpl : SeedDao {
                         statement[price] = seed.price
                         statement[stageInfo] = seed.stageInfo
                         statement[plantLevel] = seed.plantLevel
-                        statement[cropId] = seed.cropId
                     }
-
-                row[SeedTable.id] > 0
+                    result > 0
+                }
             }
         }
     }

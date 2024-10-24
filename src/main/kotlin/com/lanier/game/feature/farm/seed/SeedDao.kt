@@ -12,5 +12,5 @@ interface SeedDao {
 
     suspend fun getSeedById(id: Int): SeedRespDTOModel?
 
-    suspend fun addSeed(seed: SeedAddReqDTOModel): Boolean?
+    suspend fun upsertSeed(seed: SeedAddReqDTOModel): Boolean?
 }

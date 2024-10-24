@@ -22,7 +22,7 @@ fun Application.installSeedModule() {
 
     routing {
 
-        post("/add-seed") {
+        post("/upsert-seed") {
             val addSeedDto = try {
                 val json = call.receiveText()
                 Json.decodeFromString<SeedAddReqDTOModel>(json)
@@ -52,7 +52,7 @@ fun Application.installSeedModule() {
                 return@post
             }
 
-            val result = seedDao.addSeed(addSeedDto)
+            val result = seedDao.upsertSeed(addSeedDto)
             if (result != true) {
                 call.respond(respError<Boolean>(code = -102, message = "add seed failed"))
                 return@post

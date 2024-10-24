@@ -22,6 +22,7 @@ data class SeedRespDTOModel(
 
 @Serializable
 data class SeedAddReqDTOModel(
+    val id: Int? = null,
     val name: String,
     val price: Int,
     val stageInfo: String,
