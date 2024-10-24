@@ -8,6 +8,7 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.update
 
 /**
  * Desc:
@@ -15,17 +16,26 @@ import org.jetbrains.exposed.sql.transactions.transaction
  * Date:    2024/10/2 22:47
  */
 class CropDaoImpl : CropDao {
-    override suspend fun addCrop(crop: CropAddReqDTOModel): Boolean? {
+    override suspend fun upsertCrop(crop: CropAddReqDTOModel): Boolean? {
         return DatabaseFactory.process {
             transaction {
-                val result = CropTable.insert { statement ->
-                    statement[name] = crop.name
-                    statement[price] = crop.price
-                    statement[season] = crop.season
-                    statement[seedId] = crop.seedId
-                }
+                if (crop.id == null) {
+                    val result = CropTable.insert { statement ->
+                        statement[name] = crop.name
+                        statement[price] = crop.price
+                        statement[season] = crop.season
+                        statement[seedId] = crop.seedId
+                    }
 
-                result[CropTable.id] > 0
+                    return@transaction result[CropTable.id] > 0
+                }
+                CropTable.update({ CropTable.id eq crop.id }) { statement ->
+                    statement[CropTable.seedId] = crop.seedId
+                    statement[CropTable.name] = crop.name
+                    statement[CropTable.price] = crop.price
+                    statement[CropTable.season] = crop.season
+                }
+                return@transaction true
             }
         }
     }

@@ -18,6 +18,7 @@ data class CropRespDTOModel(
 
 @Serializable
 data class CropAddReqDTOModel(
+    val id: Int? = null,
     val name: String,
     val price: Int,
     val seedId: Int = -1,

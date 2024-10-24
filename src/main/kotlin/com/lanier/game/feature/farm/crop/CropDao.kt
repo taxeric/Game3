@@ -10,7 +10,7 @@ import com.lanier.game.model.dto.CropRespDTOModel
  */
 interface CropDao {
 
-    suspend fun addCrop(crop: CropAddReqDTOModel): Boolean?
+    suspend fun upsertCrop(crop: CropAddReqDTOModel): Boolean?
 
     suspend fun getCropById(id: Int): CropRespDTOModel?
 
