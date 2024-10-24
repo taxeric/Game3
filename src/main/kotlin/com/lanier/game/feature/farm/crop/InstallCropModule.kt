@@ -1,11 +1,14 @@
 package com.lanier.game.feature.farm.crop
 
+import com.lanier.game.model.dto.CropAddReqDTOModel
 import com.lanier.game.model.dto.CropRespDTOModel
 import com.lanier.game.model.respError
 import com.lanier.game.model.respSuccess
 import io.ktor.server.application.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.serialization.json.Json
 
 /**
  * Desc:
@@ -61,6 +64,27 @@ fun Application.installCropModule() {
             call.respond(respSuccess(data = crops))
         }
 
+        post("/upsert-crop") {
+            val addDto = try {
+                val json = call.receiveText()
+                Json.decodeFromString<CropAddReqDTOModel>(json)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
 
+            addDto?: run {
+                call.respond(respError<Boolean>(code = -100, message = "upsert crop failed"))
+                return@post
+            }
+
+            val result = cropDao.upsertCrop(addDto)
+            if (result == false) {
+                call.respond(respError<Boolean>(code = -101, message = "crop error"))
+                return@post
+            }
+
+            call.respond(respSuccess(data = true))
+        }
     }
 }

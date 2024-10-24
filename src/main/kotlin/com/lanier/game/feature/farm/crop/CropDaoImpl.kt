@@ -29,13 +29,13 @@ class CropDaoImpl : CropDao {
 
                     return@transaction result[CropTable.id] > 0
                 }
-                CropTable.update({ CropTable.id eq crop.id }) { statement ->
+                val result = CropTable.update({ CropTable.id eq crop.id }) { statement ->
                     statement[CropTable.seedId] = crop.seedId
                     statement[CropTable.name] = crop.name
                     statement[CropTable.price] = crop.price
                     statement[CropTable.season] = crop.season
                 }
-                return@transaction true
+                return@transaction result <= 0
             }
         }
     }
