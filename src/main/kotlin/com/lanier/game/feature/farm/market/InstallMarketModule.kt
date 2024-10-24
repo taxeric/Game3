@@ -50,7 +50,7 @@ fun Application.installMarketModule() {
             )
         }
 
-        post("/add-product") {
+        post("/upsert-product") {
             val addDto = try {
                 val json = call.receiveText()
                 Json.decodeFromString<MarketAddReqDTOModel>(json)
@@ -64,7 +64,7 @@ fun Application.installMarketModule() {
                 return@post
             }
 
-            val result = marketDao.addProduct(addDto)
+            val result = marketDao.upsertProduct(addDto)
             if (result != true) {
                 call.respond(respError<Boolean>(code = -101, message = "product already exists"))
                 return@post

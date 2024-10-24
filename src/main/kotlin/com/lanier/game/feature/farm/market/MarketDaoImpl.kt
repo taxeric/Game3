@@ -8,6 +8,7 @@ import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.update
 
 /**
  * Desc:
@@ -47,19 +48,31 @@ class MarketDaoImpl : MarketDao {
         }
     }
 
-    override suspend fun addProduct(model: MarketAddReqDTOModel): Boolean? {
+    override suspend fun upsertProduct(model: MarketAddReqDTOModel): Boolean? {
         return DatabaseFactory.process {
             transaction {
-                val resultRow = MarketTable.insert { statement ->
-                    statement[itemType] = model.typeId
-                    statement[refItemId] = model.itemId
-                    statement[name] = model.name
-                    statement[price] = model.price
-                    statement[desc] = model.desc
-                    statement[isListed] = model.isListed
+                if (model.id == null) {
+                    val resultRow = MarketTable.insert { statement ->
+                        statement[itemType] = model.itemType
+                        statement[refItemId] = model.itemId
+                        statement[name] = model.name
+                        statement[price] = model.price
+                        statement[desc] = model.desc
+                        statement[isListed] = model.isListed
+                    }
+                    val newId = resultRow[MarketTable.id]
+                    newId > 0
+                } else {
+                    val result = MarketTable.update({ MarketTable.id eq model.id }) { statement ->
+                        statement[MarketTable.itemType] = model.itemType
+                        statement[MarketTable.refItemId] = model.itemId
+                        statement[MarketTable.name] = model.name
+                        statement[MarketTable.desc] = model.desc
+                        statement[MarketTable.price] = model.price
+                        statement[MarketTable.isListed] = model.isListed
+                    }
+                    result > 0
                 }
-                val newId = resultRow[MarketTable.id]
-                newId > 0
             }
         }
     }

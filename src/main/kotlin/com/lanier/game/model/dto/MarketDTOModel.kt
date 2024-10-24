@@ -10,7 +10,8 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class MarketAddReqDTOModel(
-    val typeId: Int,
+    val id: Int? = null,
+    val itemType: Int,
     val itemId: Int,
     val name: String,
     val price: Int,

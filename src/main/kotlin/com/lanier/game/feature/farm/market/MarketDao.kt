@@ -14,5 +14,5 @@ interface MarketDao {
 
     suspend fun getAllProductsByType(type: Int) : List<MarketRespDTOModel>?
 
-    suspend fun addProduct(model: MarketAddReqDTOModel) : Boolean?
+    suspend fun upsertProduct(model: MarketAddReqDTOModel) : Boolean?
 }
