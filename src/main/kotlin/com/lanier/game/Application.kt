@@ -1,8 +1,10 @@
 package com.lanier.game
 
+import com.lanier.game.feature.farm.crop.installCropModule
 import com.lanier.game.feature.farm.land.installLandModule
 import com.lanier.game.feature.farm.market.installMarketModule
 import com.lanier.game.feature.farm.order.installOrderModule
+import com.lanier.game.feature.farm.seed.installSeedModule
 import com.lanier.game.feature.farm.warehouse.installWarehouseModule
 import com.lanier.game.feature.user.installUserModule
 import com.lanier.game.plugins.*
@@ -31,6 +33,8 @@ fun Application.module() {
 fun Application.installFeatureModules() {
     installUserModule()
     installMarketModule()
+    installSeedModule()
+    installCropModule()
     installLandModule()
     installOrderModule()
     installWarehouseModule()
