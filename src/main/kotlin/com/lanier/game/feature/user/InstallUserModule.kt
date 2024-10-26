@@ -9,7 +9,7 @@ import com.lanier.game.model.dto.UserRegisterRespDTOModel
 import com.lanier.game.model.dto.UserRespDTOModel
 import com.lanier.game.model.respError
 import com.lanier.game.model.respSuccess
-import com.lanier.game.plugins.jwtIsuser
+import com.lanier.game.plugins.jwtIssuer
 import com.lanier.game.plugins.jwtSecret
 import io.ktor.server.application.Application
 import io.ktor.server.request.receiveText
@@ -56,9 +56,9 @@ fun Application.installUserModule() {
             val landInfos = landDao.getLandsInfoByUid(user.id)
 
             val token = JWT.create()
-                .withIssuer(jwtIsuser)
-                .withClaim("account", user.account)
-                .withExpiresAt(Date(System.currentTimeMillis() + 1800000))
+                .withIssuer(jwtIssuer)
+                .withIssuedAt(Date())
+                .withExpiresAt(Date(System.currentTimeMillis() + 1_800_000))
                 .sign(Algorithm.HMAC256(jwtSecret))
 
             val respUser = user.copy(

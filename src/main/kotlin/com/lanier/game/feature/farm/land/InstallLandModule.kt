@@ -9,7 +9,9 @@ import com.lanier.game.model.dto.Land
 import com.lanier.game.model.dto.LandPlantDto
 import com.lanier.game.model.respError
 import com.lanier.game.model.respSuccess
+import com.lanier.game.plugins.AUTH_JWT
 import io.ktor.server.application.Application
+import io.ktor.server.auth.*
 import io.ktor.server.request.receiveText
 import io.ktor.server.response.respond
 import io.ktor.server.routing.post
@@ -27,70 +29,74 @@ fun Application.installLandModule() {
     val warehouseDao : WarehouseDao = WarehouseDaoImpl()
 
     routing {
-        post("/land-plant") {
-            val landPlantDto = try {
-                val receiveText = call.receiveText()
-                Json.decodeFromString<LandPlantDto>(receiveText)
-            } catch (thr: Throwable) {
-                thr.printStackTrace()
-                null
-            }
 
-            if (landPlantDto == null) {
-                call.respond(respError<Boolean>())
-                return@post
-            }
+        authenticate(AUTH_JWT) {
 
-            val landStatus = landDao.getLandStatusByLandId(landPlantDto.userId, landPlantDto.landId)
-            if (landStatus == null) {
-                call.respond(
-                    respError<Boolean>(
-                        code = -100,
-                        message = "plant failed: unknown status"
+            post("/land-plant") {
+                val landPlantDto = try {
+                    val receiveText = call.receiveText()
+                    Json.decodeFromString<LandPlantDto>(receiveText)
+                } catch (thr: Throwable) {
+                    thr.printStackTrace()
+                    null
+                }
+
+                if (landPlantDto == null) {
+                    call.respond(respError<Boolean>())
+                    return@post
+                }
+
+                val landStatus = landDao.getLandStatusByLandId(landPlantDto.userId, landPlantDto.landId)
+                if (landStatus == null) {
+                    call.respond(
+                        respError<Boolean>(
+                            code = -100,
+                            message = "plant failed: unknown status"
+                        )
                     )
-                )
-                return@post
-            }
+                    return@post
+                }
 
-            if (landStatus == Land.UNLOCK || landStatus == Land.PLANTING) {
-                call.respond(
-                    respError<Boolean>(
-                        code = -101,
-                        message = "plant failed: the land wasn't idle, $landStatus"
+                if (landStatus == Land.UNLOCK || landStatus == Land.PLANTING) {
+                    call.respond(
+                        respError<Boolean>(
+                            code = -101,
+                            message = "plant failed: the land wasn't idle, $landStatus"
+                        )
                     )
+                    return@post
+                }
+
+                val consumeResult = warehouseDao.consume(
+                    userId = landPlantDto.userId,
+                    itemType = WarehouseTable.TYPE_SEED,
+                    itemId = landPlantDto.seedId,
+                    quantity = 1
                 )
-                return@post
-            }
 
-            val consumeResult = warehouseDao.consume(
-                userId = landPlantDto.userId,
-                itemType = WarehouseTable.TYPE_SEED,
-                itemId = landPlantDto.seedId,
-                quantity = 1
-            )
-
-            if (consumeResult != true) {
-                call.respond(
-                    respError<Boolean>(
-                        code = -102,
-                        message = "plant failed: consume warehouse item was failed"
+                if (consumeResult != true) {
+                    call.respond(
+                        respError<Boolean>(
+                            code = -102,
+                            message = "plant failed: consume warehouse item was failed"
+                        )
                     )
-                )
-                return@post
-            }
+                    return@post
+                }
 
-            val plantResult = landDao.plant(landPlantDto)
-            if (plantResult != true) {
-                call.respond(
-                    respError<Boolean>(
-                        code = -103,
-                        message = "plant failed"
+                val plantResult = landDao.plant(landPlantDto)
+                if (plantResult != true) {
+                    call.respond(
+                        respError<Boolean>(
+                            code = -103,
+                            message = "plant failed"
+                        )
                     )
-                )
-                return@post
-            }
+                    return@post
+                }
 
-            call.respond(respSuccess(data = true))
+                call.respond(respSuccess(data = true))
+            }
         }
     }
 }
