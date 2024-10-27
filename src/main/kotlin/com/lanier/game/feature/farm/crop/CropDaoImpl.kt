@@ -66,7 +66,7 @@ class CropDaoImpl : CropDao {
             }
             val crops = queryRows.map { row ->
                 CropRespDTOModel(
-                    id = row[CropTable.id],
+                    cropId = row[CropTable.id],
                     name = row[CropTable.name],
                     price = row[CropTable.price],
                     season = row[CropTable.season],
@@ -94,7 +94,7 @@ class CropDaoImpl : CropDao {
 
     private fun ResultRow.toCrop(): CropRespDTOModel {
         return CropRespDTOModel(
-            id = this[CropTable.id],
+            cropId = this[CropTable.id],
             name = this[CropTable.name],
             price = this[CropTable.price],
             season = this[CropTable.season],

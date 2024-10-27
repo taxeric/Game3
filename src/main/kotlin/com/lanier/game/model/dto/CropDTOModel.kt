@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class CropRespDTOModel(
-    val id: Int,
+    val cropId: Int,
     val seedId: Int,
     val name: String,
     val price: Int,
