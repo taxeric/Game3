@@ -21,6 +21,7 @@ fun Application.module() {
     configureSerialization()
     configureJWT()
     configureRouting()
+    configStatic()
 
     DatabaseFactory.init()
 
