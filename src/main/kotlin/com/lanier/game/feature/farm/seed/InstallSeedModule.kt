@@ -12,6 +12,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.json.Json
+import java.io.File
 
 /**
  * Desc:    
@@ -79,6 +80,84 @@ fun Application.installSeedModule() {
                 }
 
                 call.respond(respSuccess(data = seed))
+            }
+        }
+
+        get("/new") {
+            val originFile = File("src/main/origin/seeds/farm_seeds.txt")
+            val content = originFile.readText()
+
+            val regex = Regex("(\\w+)=\"(.*?)\"")
+
+            fun parseToSeedModel(attributes: Map<String, String>): SeedAddReqDTOModel? {
+                val mid = attributes["id"] ?: "-1"
+                val picPathStr = mid.replace("100728", "")
+                val picFolder = File("src/main/resources/seed_pics/$picPathStr/")
+                if (picFolder.exists().not()) {
+                    return null
+                }
+                val childFilesSize = picFolder.listFiles()?.size ?: 2
+                val grownTime = attributes["grownTime"]?.toIntOrNull() ?: 0
+                val stageInfo = buildStageInfo(childFilesSize - 1, grownTime)
+                return SeedAddReqDTOModel(
+                    id = mid.toIntOrNull(),
+                    name = attributes["name"] ?: "Unknown",
+                    maxHarvestCount = attributes["seasonN"]?.toIntOrNull() ?: 0,
+                    singleHarvestAmount = attributes["harvestN"]?.toIntOrNull() ?: 0,
+                    cropExpPer = attributes["harvestExpdes"]?.toIntOrNull() ?: 0,
+                    cropId = attributes["harvestId"]?.toIntOrNull() ?: -1,
+                    plantLevel = attributes["buyLevel"]?.toIntOrNull() ?: 0,
+                    season = 0,
+                    price = 0,
+                    stageInfo = stageInfo,
+                )
+            }
+
+            val seedModels = content.split(Regex("<ManorSeedDes")).filter { it.contains("id=") }.mapNotNull { node ->
+                val attributes = regex.findAll(node).associate { it.groupValues[1] to it.groupValues[2] }
+                parseToSeedModel(attributes)
+            }
+
+            val seeds = seedModels.sortedBy { it.id }
+
+            val insertRows = seedDao.upsertSeeds(seeds)
+            if (insertRows == null) {
+                call.respond(respError<Boolean>(code = -100, message = "system error"))
+                return@get
+            }
+
+            call.respond(respSuccess<Int>(data = insertRows.size))
+        }
+    }
+}
+
+private fun buildStageInfo(size: Int, minutes: Int): String {
+    val baseValue = minutes / size
+    val remainder = minutes % size
+    val result = MutableList(size) { baseValue }
+    if (remainder > 0) {
+        result[0] += remainder
+    }
+    val calcResult = result.joinToString(", ")
+    return buildString {
+        when (size) {
+            4 -> {
+                append("{\"stageName\":[")
+                append("\"幼苗\", \"小叶子\", \"大叶子\", \"成熟\"")
+                append("],")
+                append("\"stageSustainTime\":[")
+                append(calcResult)
+                append("]}")
+            }
+            5 -> {
+                append("{\"stageName\":[")
+                append("\"幼苗\", \"小叶子\", \"中叶子\", \"大叶子\", \"成熟\"")
+                append("],")
+                append("\"stageSustainTime\":[")
+                append(calcResult)
+                append("]}")
+            }
+            else -> {
             }
         }
     }

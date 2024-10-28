@@ -3,14 +3,8 @@ package com.lanier.game.feature.farm.seed
 import com.lanier.game.DatabaseFactory
 import com.lanier.game.model.dto.SeedAddReqDTOModel
 import com.lanier.game.model.dto.SeedRespDTOModel
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.jetbrains.exposed.sql.update
 
 /**
  * Desc:
@@ -46,6 +40,8 @@ class SeedDaoImpl : SeedDao {
                             statement[stageInfo] = seed.stageInfo
                             statement[plantLevel] = seed.plantLevel
                             statement[cropId] = seed.cropId
+                            statement[seedExp] = seed.seedExp
+                            statement[desc] = seed.desc
                         }
 
                     row[SeedTable.id] > 0
@@ -60,9 +56,47 @@ class SeedDaoImpl : SeedDao {
                         statement[price] = seed.price
                         statement[stageInfo] = seed.stageInfo
                         statement[plantLevel] = seed.plantLevel
+                        statement[seedExp] = seed.seedExp
+                        statement[desc] = seed.desc
                     }
                     result > 0
                 }
+            }
+        }
+    }
+
+    override suspend fun upsertSeeds(seeds: List<SeedAddReqDTOModel>): List<Int>? {
+        return DatabaseFactory.process {
+            transaction {
+                val resultRows = SeedTable.batchInsert(
+                    data = seeds,
+                    ignore = true,
+                ) { seed ->
+                    seed.id?.let {
+                        this[SeedTable.id] = seed.id
+                        this[SeedTable.cropId] = seed.cropId
+                        this[SeedTable.name] = seed.name
+                        this[SeedTable.maxHarvestCount] = seed.maxHarvestCount
+                        this[SeedTable.cropExpPer] = seed.cropExpPer
+                        this[SeedTable.singleHarvestAmount] = seed.singleHarvestAmount
+                        this[SeedTable.season] = seed.season
+                        this[SeedTable.price] = seed.price
+                        this[SeedTable.stageInfo] = seed.stageInfo
+                        this[SeedTable.plantLevel] = seed.plantLevel
+                        this[SeedTable.seedExp] = seed.seedExp
+                        this[SeedTable.desc] = seed.desc
+                    }
+                }
+
+                if (resultRows.isEmpty()) {
+                    return@transaction null
+                }
+
+                val insertIds = resultRows.map {
+                    it[SeedTable.id]
+                }
+
+                return@transaction insertIds
             }
         }
     }
@@ -76,10 +110,12 @@ class SeedDaoImpl : SeedDao {
             season = this[SeedTable.season],
             stageInfo = this[SeedTable.stageInfo],
             plantLevel = this[SeedTable.plantLevel],
+            seedExp = this[SeedTable.seedExp]
         ).apply {
             name = this@toSeed[SeedTable.name]
             price = this@toSeed[SeedTable.price]
             itemId = this@toSeed[SeedTable.id]
+            desc = this@toSeed[SeedTable.desc]
         }
     }
 }

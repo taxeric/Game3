@@ -18,6 +18,7 @@ data class SeedRespDTOModel(
     val season: Int,
     val stageInfo: String,
     val plantLevel: Int,
+    val seedExp: Int,
 ): BaseItem()
 
 @Serializable
@@ -25,6 +26,7 @@ data class SeedAddReqDTOModel(
     val id: Int? = null,
     val name: String,
     val price: Int,
+    val desc: String = "",
     val stageInfo: String,
     /**
      * 最大可以收获的次数
@@ -42,6 +44,7 @@ data class SeedAddReqDTOModel(
     val season: Int = 0,
     val plantLevel: Int = 0,
     val addToCrop: Boolean = true,
+    val seedExp: Int = 1,
 ) {
 
     fun valid(): Boolean {

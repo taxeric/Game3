@@ -10,7 +10,7 @@ import org.jetbrains.exposed.sql.Table
 private const val TABLE_SEED = "seed"
 
 object SeedTable : Table(TABLE_SEED) {
-    val id = integer("id").autoIncrement()
+    val id = integer("id")
     val cropId = integer("crop_id")
     val name = varchar("name", 50)
     val maxHarvestCount = integer("max_harvest_count")
@@ -20,4 +20,9 @@ object SeedTable : Table(TABLE_SEED) {
     val price = integer("price")
     val stageInfo = text("stage_info")
     val plantLevel = integer("plant_level").default(0)
+    val seedExp = integer("seed_exp").default(1)
+    val desc = varchar("desc", 200)
+
+    override val primaryKey: PrimaryKey
+        get() = PrimaryKey(id)
 }
