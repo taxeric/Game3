@@ -89,9 +89,11 @@ class WarehouseDaoImpl : WarehouseDao {
                                 season = it[SeedTable.season],
                                 stageInfo = it[SeedTable.stageInfo],
                                 plantLevel = it[SeedTable.plantLevel],
+                                seedExp = it[SeedTable.seedExp],
                             ).apply {
                                 name = it[SeedTable.name]
                                 price = it[SeedTable.price]
+                                desc = it[SeedTable.desc]
                                 itemId = it[SeedTable.id]
                                 itemType = BaseItem.TYPE_SEED
                             }
