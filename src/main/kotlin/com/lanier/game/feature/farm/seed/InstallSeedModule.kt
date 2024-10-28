@@ -96,9 +96,9 @@ fun Application.installSeedModule() {
                 if (picFolder.exists().not()) {
                     return null
                 }
-                val childFilesSize = picFolder.listFiles()?.size ?: 2
+                val childFilesSize = picFolder.listFiles()?.size ?: 3
                 val grownTime = attributes["grownTime"]?.toIntOrNull() ?: 0
-                val stageInfo = buildStageInfo(childFilesSize - 1, grownTime)
+                val stageInfo = buildStageInfo(childFilesSize - 2, grownTime)
                 return SeedAddReqDTOModel(
                     id = mid.toIntOrNull(),
                     name = attributes["name"] ?: "Unknown",
@@ -126,7 +126,7 @@ fun Application.installSeedModule() {
                 return@get
             }
 
-            call.respond(respSuccess<Int>(data = insertRows.size))
+            call.respond(respSuccess(data = insertRows.size))
         }
     }
 }
@@ -141,7 +141,7 @@ private fun buildStageInfo(size: Int, minutes: Int): String {
     val calcResult = result.joinToString(", ")
     return buildString {
         when (size) {
-            4 -> {
+            3 -> {
                 append("{\"stageName\":[")
                 append("\"幼苗\", \"小叶子\", \"大叶子\", \"成熟\"")
                 append("],")
@@ -149,7 +149,7 @@ private fun buildStageInfo(size: Int, minutes: Int): String {
                 append(calcResult)
                 append("]}")
             }
-            5 -> {
+            4 -> {
                 append("{\"stageName\":[")
                 append("\"幼苗\", \"小叶子\", \"中叶子\", \"大叶子\", \"成熟\"")
                 append("],")
