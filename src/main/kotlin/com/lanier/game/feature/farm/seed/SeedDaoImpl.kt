@@ -25,6 +25,23 @@ class SeedDaoImpl : SeedDao {
         }
     }
 
+    override suspend fun getSeeds(offset: Int, limit: Int): List<SeedRespDTOModel>? {
+        return DatabaseFactory.process {
+            transaction {
+                val queryRows = transaction {
+                    val rows = SeedTable
+                        .selectAll()
+                        .limit(limit, offset.toLong())
+                        .toList()
+
+                    rows
+                }
+                val crops = queryRows.map { row -> row.toSeed() }
+                crops
+            }
+        }
+    }
+
     override suspend fun upsertSeed(seed: SeedAddReqDTOModel): Boolean? {
         return DatabaseFactory.process {
             transaction {

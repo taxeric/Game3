@@ -66,7 +66,7 @@ fun Application.installSeedModule() {
                 call.respond(respSuccess(data = true))
             }
 
-            get("/get-seed") {
+            get("/get-seed-by-id") {
                 val seedId = call.request.queryParameters["id"]?.toIntOrNull()
                 if (seedId == null) {
                     call.respond(respError<SeedRespDTOModel>(message = "invalid seed id"))
@@ -80,6 +80,18 @@ fun Application.installSeedModule() {
                 }
 
                 call.respond(respSuccess(data = seed))
+            }
+
+            get("/get-seeds") {
+                val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 20
+                val offset = call.request.queryParameters["offset"]?.toIntOrNull()
+                if (offset == null || limit <= 0) {
+                    call.respond(respError<List<SeedRespDTOModel>>(message = "invalid seed params"))
+                    return@get
+                }
+
+                val seeds = seedDao.getSeeds(offset, limit)
+                call.respond(respSuccess(data = seeds))
             }
         }
 

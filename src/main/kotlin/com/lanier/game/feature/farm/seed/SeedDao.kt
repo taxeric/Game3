@@ -12,6 +12,8 @@ interface SeedDao {
 
     suspend fun getSeedById(id: Int): SeedRespDTOModel?
 
+    suspend fun getSeeds(offset: Int, limit: Int): List<SeedRespDTOModel>?
+
     suspend fun upsertSeed(seed: SeedAddReqDTOModel): Boolean?
 
     suspend fun upsertSeeds(seeds: List<SeedAddReqDTOModel>): List<Int>?
