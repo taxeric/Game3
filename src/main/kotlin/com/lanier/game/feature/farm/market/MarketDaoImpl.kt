@@ -4,11 +4,8 @@ import com.lanier.game.DatabaseFactory
 import com.lanier.game.model.BaseItem
 import com.lanier.game.model.dto.MarketAddReqDTOModel
 import com.lanier.game.model.dto.MarketRespDTOModel
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.jetbrains.exposed.sql.update
 
 /**
  * Desc:
@@ -30,7 +27,11 @@ class MarketDaoImpl : MarketDao {
         }
     }
 
-    override suspend fun getAllProductsByType(type: Int): List<MarketRespDTOModel>? {
+    override suspend fun getAllProductsByType(
+        type: Int,
+        offset: Int,
+        limit: Int,
+    ): List<MarketRespDTOModel>? {
         return DatabaseFactory.process {
             if (BaseItem.validType(type).not()) {
                 return@process null
@@ -39,6 +40,32 @@ class MarketDaoImpl : MarketDao {
                 MarketTable
                     .selectAll()
                     .where { MarketTable.itemType eq type }
+                    .limit(limit, offset.toLong())
+                    .toList()
+            }
+            if (resultRows.isEmpty()) return@process emptyList<MarketRespDTOModel>()
+            resultRows.map { row ->
+                row.toMarketItem()
+            }
+        }
+    }
+
+    override suspend fun getAllListedProductsByType(
+        type: Int,
+        offset: Int,
+        limit: Int,
+        isListed: Boolean
+    ): List<MarketRespDTOModel>? {
+        return DatabaseFactory.process {
+            if (BaseItem.validType(type).not()) {
+                return@process null
+            }
+            val resultRows = transaction {
+                MarketTable
+                    .selectAll()
+                    .where { MarketTable.itemType eq type }
+                    .andWhere { MarketTable.isListed eq isListed }
+                    .limit(limit, offset.toLong())
                     .toList()
             }
             if (resultRows.isEmpty()) return@process emptyList<MarketRespDTOModel>()

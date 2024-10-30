@@ -24,11 +24,13 @@ fun Application.installMarketModule() {
 
         authenticate(AUTH_JWT) {
 
-            get("/get-products") {
+            get("/get-listed-products") {
                 val type = call.request.queryParameters["type"]
-                if (type.isNullOrBlank()) {
+                val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 20
+                val offset = call.request.queryParameters["offset"]?.toIntOrNull()
+                if (type.isNullOrBlank() || limit <= 0 || offset == null) {
                     call.respond(
-                        respError<Boolean>(message = "invalid type [$type]")
+                        respError<Boolean>(message = "invalid type params")
                     )
                     return@get
                 }
@@ -41,7 +43,7 @@ fun Application.installMarketModule() {
                     return@get
                 }
 
-                val products = marketDao.getAllProductsByType(queryType)
+                val products = marketDao.getAllListedProductsByType(queryType, offset, limit, true)
                 if (products == null) {
                     call.respond(
                         respError<Boolean>(message = "no produces of type [$type] were found")
