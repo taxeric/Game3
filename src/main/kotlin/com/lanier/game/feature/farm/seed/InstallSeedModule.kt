@@ -95,7 +95,7 @@ fun Application.installSeedModule() {
             }
         }
 
-        get("/new") {
+        get("/seed/new") {
 
             val seed1 = processSeeds1()
             val seeds = processSeed2(seed1)
