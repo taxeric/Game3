@@ -10,6 +10,8 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 /**
  * Desc:
@@ -86,6 +88,34 @@ fun Application.installMarketModule() {
                 call.respond(
                     respSuccess(data = products)
                 )
+            }
+
+            post("/change-listed") {
+                val jsonString = call.receiveText()
+                val json = Json.parseToJsonElement(jsonString).jsonObject
+                val marketIdStr = json["marketId"]?.jsonPrimitive?.content
+                val listedStr = json["listed"]?.jsonPrimitive?.content
+
+                if (marketIdStr.isNullOrBlank() || listedStr.isNullOrBlank()) {
+                    call.respond(respError<Boolean>(message = "invalid params"))
+                    return@post
+                }
+
+                val marketId = marketIdStr.toIntOrNull()
+                val listed = listedStr.toBoolean()
+
+                if (marketId == null || marketId < 0) {
+                    call.respond(respError<Boolean>(message = "invalid id param"))
+                    return@post
+                }
+
+                val result = marketDao.changeListedState(marketId, listed)
+                if (result == null) {
+                    call.respond(respError<Boolean>(message = "operation failed"))
+                    return@post
+                }
+
+                call.respond(respSuccess(data = true))
             }
 
             post("/upsert-product") {

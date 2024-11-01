@@ -26,4 +26,6 @@ interface MarketDao {
     ) : List<MarketRespDTOModel>?
 
     suspend fun upsertProduct(model: MarketAddReqDTOModel) : Boolean?
+
+    suspend fun changeListedState(marketId: Int, listed: Boolean) : Boolean?
 }

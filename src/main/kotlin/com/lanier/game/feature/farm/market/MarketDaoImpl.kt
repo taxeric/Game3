@@ -5,6 +5,7 @@ import com.lanier.game.model.BaseItem
 import com.lanier.game.model.dto.MarketAddReqDTOModel
 import com.lanier.game.model.dto.MarketRespDTOModel
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 
 /**
@@ -100,6 +101,17 @@ class MarketDaoImpl : MarketDao {
                     }
                     result > 0
                 }
+            }
+        }
+    }
+
+    override suspend fun changeListedState(marketId: Int, listed: Boolean): Boolean? {
+        return DatabaseFactory.process {
+            transaction {
+                val result = MarketTable.update({ MarketTable.id eq marketId }) { statement ->
+                    statement[MarketTable.isListed] = isListed
+                }
+                result == 1
             }
         }
     }
