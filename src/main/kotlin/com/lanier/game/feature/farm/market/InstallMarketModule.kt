@@ -56,6 +56,38 @@ fun Application.installMarketModule() {
                 )
             }
 
+            get("/get-products") {
+                val type = call.request.queryParameters["type"]
+                val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 20
+                val offset = call.request.queryParameters["offset"]?.toIntOrNull()
+                if (type.isNullOrBlank() || limit <= 0 || offset == null) {
+                    call.respond(
+                        respError<Boolean>(message = "invalid type params")
+                    )
+                    return@get
+                }
+
+                val queryType = type.toIntOrNull() ?: -1
+                if (queryType == -1) {
+                    call.respond(
+                        respError<Boolean>(message = "invalid type [$type]")
+                    )
+                    return@get
+                }
+
+                val products = marketDao.getAllProductsByType(queryType, offset, limit)
+                if (products == null) {
+                    call.respond(
+                        respError<Boolean>(message = "no produces of type [$type] were found")
+                    )
+                    return@get
+                }
+
+                call.respond(
+                    respSuccess(data = products)
+                )
+            }
+
             post("/upsert-product") {
                 val addDto = try {
                     val json = call.receiveText()
