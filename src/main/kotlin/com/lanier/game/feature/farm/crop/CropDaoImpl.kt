@@ -3,12 +3,9 @@ package com.lanier.game.feature.farm.crop
 import com.lanier.game.DatabaseFactory
 import com.lanier.game.model.dto.CropAddReqDTOModel
 import com.lanier.game.model.dto.CropRespDTOModel
-import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.jetbrains.exposed.sql.update
 
 /**
  * Desc:
@@ -36,6 +33,35 @@ class CropDaoImpl : CropDao {
                     statement[CropTable.season] = crop.season
                 }
                 return@transaction result <= 0
+            }
+        }
+    }
+
+    override suspend fun upsertCrops(crops: List<CropAddReqDTOModel>): List<Int>? {
+        return DatabaseFactory.process {
+            transaction {
+                val resultRows = CropTable.batchInsert(
+                    data = crops,
+                    ignore = true,
+                ) { crop ->
+                    crop.id?.let {
+                        this[CropTable.id] = crop.id
+                        this[CropTable.seedId] = crop.seedId
+                        this[CropTable.name] = crop.name
+                        this[CropTable.price] = crop.price
+                        this[CropTable.season] = crop.season
+                    }
+                }
+
+                if (resultRows.isEmpty()) {
+                    return@transaction null
+                }
+
+                val insertIds = resultRows.map {
+                    it[CropTable.id]
+                }
+
+                return@transaction insertIds
             }
         }
     }

@@ -12,6 +12,8 @@ interface CropDao {
 
     suspend fun upsertCrop(crop: CropAddReqDTOModel): Boolean?
 
+    suspend fun upsertCrops(crops: List<CropAddReqDTOModel>): List<Int>?
+
     suspend fun getCropById(id: Int): CropRespDTOModel?
 
     suspend fun getCropByName(name: String, limit: Int, offset: Int): List<CropRespDTOModel>?
