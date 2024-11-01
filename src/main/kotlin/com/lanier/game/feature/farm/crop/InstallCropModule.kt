@@ -11,6 +11,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.json.Json
+import java.io.File
 
 /**
  * Desc:
@@ -91,5 +92,45 @@ fun Application.installCropModule() {
                 call.respond(respSuccess(data = true))
             }
         }
+
+        get("/crop/new") {
+            val crops = processCrop()
+            val insertRows = cropDao.upsertCrops(crops)
+            if (insertRows == null) {
+                call.respond(respError<Boolean>(code = -100, message = "system error"))
+                return@get
+            }
+            call.respond(respSuccess(data = insertRows.size))
+        }
     }
+}
+
+private fun processCrop(): List<CropAddReqDTOModel> {
+    val originFile = File("src/main/origin/seeds/farm_crops.txt")
+    val content = originFile.readText()
+    val itemPattern = Regex("""<Item>.*?</Item>""", RegexOption.DOT_MATCHES_ALL)
+    val idPattern = Regex("""<ID>(\d+)</ID>""")
+    val namePattern = Regex("""<Name>(.*?)</Name>""")
+    val pricePattern = Regex("""<Price>(\d+)</Price>""")
+
+    val list = mutableListOf<CropAddReqDTOModel>()
+
+    itemPattern.findAll(content).forEach { itemMatch ->
+        val itemText = itemMatch.value
+
+        // 提取各字段
+        val cropId = idPattern.find(itemText)?.groupValues?.get(1) ?: "无"
+        val name = namePattern.find(itemText)?.groupValues?.get(1) ?: "无"
+        val price = pricePattern.find(itemText)?.groupValues?.get(1) ?: "无"
+        list.add(
+            CropAddReqDTOModel(
+                id = cropId.toInt(),
+                name = name,
+                price = price.toInt(),
+                season = 0,
+            )
+        )
+    }
+
+    return list
 }
