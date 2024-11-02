@@ -82,6 +82,7 @@ class WarehouseDaoImpl : WarehouseDao {
                         .toList()
                         .map {
                             val seed = SeedRespDTOModel(
+                                seedId = it[SeedTable.id],
                                 cropId = it[SeedTable.cropId],
                                 maxHarvestCount = it[SeedTable.maxHarvestCount],
                                 cropExpPer = it[SeedTable.cropExpPer],
@@ -94,8 +95,6 @@ class WarehouseDaoImpl : WarehouseDao {
                                 name = it[SeedTable.name]
                                 price = it[SeedTable.price]
                                 desc = it[SeedTable.desc]
-                                itemId = it[SeedTable.id]
-                                itemType = BaseItem.TYPE_SEED
                             }
                             WarehouseRespDTOModel(
                                 warehouseId = it[WarehouseTable.id],

@@ -11,6 +11,7 @@ import kotlinx.serialization.Transient
  */
 @Serializable
 data class SeedRespDTOModel(
+    val seedId: Int,
     val cropId: Int,
     val maxHarvestCount: Int,
     val cropExpPer: Int,
@@ -19,7 +20,7 @@ data class SeedRespDTOModel(
     val stageInfo: String,
     val plantLevel: Int,
     val seedExp: Int,
-): BaseItem()
+): BaseItem(TYPE_SEED)
 
 @Serializable
 data class SeedAddReqDTOModel(

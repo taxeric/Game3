@@ -8,7 +8,9 @@ import kotlinx.serialization.Serializable
  * Date 2024/9/28 20:13
  */
 @Serializable
-open class BaseItem {
+open class BaseItem(
+    val itemType: Int
+) {
 
     companion object {
 
@@ -21,8 +23,6 @@ open class BaseItem {
         }
     }
 
-    var itemId: Int = -1
-    var itemType: Int = -1
     var name: String = ""
     var price: Int = 0
     var desc: String? = ""

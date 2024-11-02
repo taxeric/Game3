@@ -42,6 +42,22 @@ class SeedDaoImpl : SeedDao {
         }
     }
 
+    override suspend fun getAllSeeds(): List<SeedRespDTOModel>? {
+        return DatabaseFactory.process {
+            transaction {
+                val queryRows = transaction {
+                    val rows = SeedTable
+                        .selectAll()
+                        .toList()
+
+                    rows
+                }
+                val crops = queryRows.map { row -> row.toSeed() }
+                crops
+            }
+        }
+    }
+
     override suspend fun upsertSeed(seed: SeedAddReqDTOModel): Boolean? {
         return DatabaseFactory.process {
             transaction {
@@ -120,6 +136,7 @@ class SeedDaoImpl : SeedDao {
 
     private fun ResultRow.toSeed(): SeedRespDTOModel {
         return SeedRespDTOModel(
+            seedId = this[SeedTable.id],
             cropId = this[SeedTable.cropId],
             maxHarvestCount = this[SeedTable.maxHarvestCount],
             singleHarvestAmount = this[SeedTable.singleHarvestAmount],
@@ -131,7 +148,6 @@ class SeedDaoImpl : SeedDao {
         ).apply {
             name = this@toSeed[SeedTable.name]
             price = this@toSeed[SeedTable.price]
-            itemId = this@toSeed[SeedTable.id]
             desc = this@toSeed[SeedTable.desc]
         }
     }
