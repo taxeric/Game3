@@ -105,6 +105,34 @@ class MarketDaoImpl : MarketDao {
         }
     }
 
+    override suspend fun upsertProducts(models: List<MarketAddReqDTOModel>): List<Int>? {
+        return DatabaseFactory.process {
+            transaction {
+                val resultRows = MarketTable.batchInsert(
+                    data = models,
+                    ignore = true
+                ) { model ->
+                    this[MarketTable.name] = model.name
+                    this[MarketTable.desc] = model.desc
+                    this[MarketTable.price] = model.price
+                    this[MarketTable.refItemId] = model.itemId
+                    this[MarketTable.itemType] = model.itemType
+                    this[MarketTable.isListed] = model.isListed
+                }
+
+                if (resultRows.isEmpty()) {
+                    return@transaction null
+                }
+
+                val insertIds = resultRows.map {
+                    it[MarketTable.id]
+                }
+
+                return@transaction insertIds
+            }
+        }
+    }
+
     override suspend fun changeListedState(marketId: Int, listed: Boolean): Boolean? {
         return DatabaseFactory.process {
             transaction {
@@ -120,12 +148,11 @@ class MarketDaoImpl : MarketDao {
         return MarketRespDTOModel(
             id = this[MarketTable.id],
             isListed = this[MarketTable.isListed],
-        ).apply {
-            name = this@toMarketItem[MarketTable.name]
-            price = this@toMarketItem[MarketTable.price]
-            desc = this@toMarketItem[MarketTable.desc]
-            itemId = this@toMarketItem[MarketTable.refItemId]
-            itemType = this@toMarketItem[MarketTable.itemType]
-        }
+            name = this@toMarketItem[MarketTable.name],
+            price = this@toMarketItem[MarketTable.price],
+            desc = this@toMarketItem[MarketTable.desc],
+            itemId = this@toMarketItem[MarketTable.refItemId],
+            itemType = this@toMarketItem[MarketTable.itemType],
+        )
     }
 }

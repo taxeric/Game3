@@ -1,5 +1,7 @@
 package com.lanier.game.feature.farm.market
 
+import com.lanier.game.feature.farm.seed.SeedDao
+import com.lanier.game.feature.farm.seed.SeedDaoImpl
 import com.lanier.game.model.dto.MarketAddReqDTOModel
 import com.lanier.game.model.respError
 import com.lanier.game.model.respSuccess
@@ -21,6 +23,7 @@ import kotlinx.serialization.json.jsonPrimitive
 fun Application.installMarketModule() {
 
     val marketDao: MarketDao = MarketDaoImpl()
+    val seedDao: SeedDao = SeedDaoImpl()
 
     routing {
 
@@ -140,6 +143,34 @@ fun Application.installMarketModule() {
 
                 call.respond(respSuccess(data = true))
             }
+        }
+
+        get("/market/add-all-seeds") {
+            val seeds = seedDao.getAllSeeds()
+
+            if (seeds.isNullOrEmpty()) {
+                call.respond(respError<Boolean>())
+                return@get
+            }
+
+            val marketItems = seeds.map { seed ->
+                MarketAddReqDTOModel(
+                    itemId = seed.seedId,
+                    itemType = seed.itemType,
+                    name = seed.name,
+                    desc = seed.desc ?: "暂无说明",
+                    price = seed.price,
+                    isListed = true
+                )
+            }
+
+            val result = marketDao.upsertProducts(marketItems)
+            if (result.isNullOrEmpty()) {
+                call.respond(respError<Boolean>(code = -101, message = "product already exists"))
+                return@get
+            }
+
+            call.respond(respSuccess(data = true))
         }
     }
 }
