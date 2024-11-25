@@ -13,8 +13,13 @@ import java.io.File
 fun Application.configStatic() {
     routing {
         staticFiles(
-            remotePath = "/resources",
+            remotePath = "/res/seed",
             dir = File("src/main/resources/seed_pics")
+        )
+
+        staticFiles(
+            remotePath = "/res/land",
+            dir = File("src/main/resources/land")
         )
     }
 }
