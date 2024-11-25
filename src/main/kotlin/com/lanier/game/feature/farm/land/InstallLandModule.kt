@@ -14,8 +14,7 @@ import io.ktor.server.application.Application
 import io.ktor.server.auth.*
 import io.ktor.server.request.receiveText
 import io.ktor.server.response.respond
-import io.ktor.server.routing.post
-import io.ktor.server.routing.routing
+import io.ktor.server.routing.*
 import kotlinx.serialization.json.Json
 
 /**
@@ -96,6 +95,34 @@ fun Application.installLandModule() {
                 }
 
                 call.respond(respSuccess(data = true))
+            }
+
+            get("/land-get-details") {
+                val uid = call.request.queryParameters["uid"]
+                if (uid == null) {
+                    call.respond(
+                        respError<Boolean>(
+                            code = -101,
+                            message = "invalid uid"
+                        )
+                    )
+                    return@get
+                }
+
+                val mUid = uid.toIntOrNull()
+                if (mUid == null) {
+                    call.respond(
+                        respError<Boolean>(
+                            code = -101,
+                            message = "invalid uid"
+                        )
+                    )
+                    return@get
+                }
+
+                val landInfos = landDao.getLandsInfoByUid(mUid)
+
+                call.respond(respSuccess(data = landInfos))
             }
         }
     }
