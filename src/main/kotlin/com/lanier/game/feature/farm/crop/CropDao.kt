@@ -16,7 +16,7 @@ interface CropDao {
 
     suspend fun getCropById(id: Int): CropRespDTOModel?
 
-    suspend fun getCropByName(name: String, limit: Int, offset: Int): List<CropRespDTOModel>?
+    suspend fun getCropsByName(name: String, limit: Int, offset: Int): List<CropRespDTOModel>?
 
     suspend fun getAllCrops(limit: Int, offset: Int): List<CropRespDTOModel>?
 }

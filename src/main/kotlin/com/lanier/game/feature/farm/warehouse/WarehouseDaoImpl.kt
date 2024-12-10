@@ -1,8 +1,10 @@
 package com.lanier.game.feature.farm.warehouse
 
 import com.lanier.game.DatabaseFactory
+import com.lanier.game.feature.farm.crop.CropTable
 import com.lanier.game.feature.farm.seed.SeedTable
 import com.lanier.game.model.BaseItem
+import com.lanier.game.model.dto.CropRespDTOModel
 import com.lanier.game.model.dto.SeedRespDTOModel
 import com.lanier.game.model.dto.WarehouseRespDTOModel
 import org.jetbrains.exposed.sql.*
@@ -104,6 +106,30 @@ class WarehouseDaoImpl : WarehouseDao {
                         }
                 }
 
+                is CropTable -> {
+                    WarehouseTable
+                        .innerJoin(SeedTable, { WarehouseTable.itemId }, { CropTable.id })
+                        .selectAll()
+                        .where { WarehouseTable.itemType eq type }
+                        .toList()
+                        .map {
+                            val crop = CropRespDTOModel(
+                                cropId = it[CropTable.id],
+                                seedId = it[CropTable.seedId],
+                                season = it[CropTable.season]
+                            ).apply {
+                                name = it[CropTable.name]
+                                price = it[CropTable.price]
+                                desc = ""
+                            }
+                            WarehouseRespDTOModel(
+                                warehouseId = it[WarehouseTable.id],
+                                quantity = it[WarehouseTable.quantity],
+                                item = crop
+                            )
+                        }
+                }
+
                 else -> null
             }
         }
@@ -124,6 +150,7 @@ class WarehouseDaoImpl : WarehouseDao {
     private fun obtainItemTableByType(type: Int) : Table? {
         return when (type) {
             BaseItem.TYPE_SEED -> SeedTable
+            BaseItem.TYPE_CROP -> CropTable
             else -> null
         }
     }

@@ -1,5 +1,6 @@
 package com.lanier.game.model.dto
 
+import com.lanier.game.model.BaseItem
 import kotlinx.serialization.Serializable
 
 /**
@@ -11,10 +12,8 @@ import kotlinx.serialization.Serializable
 data class CropRespDTOModel(
     val cropId: Int,
     val seedId: Int,
-    val name: String,
-    val price: Int,
     val season: Int,
-)
+): BaseItem(TYPE_CROP)
 
 @Serializable
 data class CropAddReqDTOModel(

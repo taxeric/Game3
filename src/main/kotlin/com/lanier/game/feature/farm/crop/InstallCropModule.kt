@@ -52,7 +52,7 @@ fun Application.installCropModule() {
                     return@get
                 }
 
-                val crops = cropDao.getCropByName(name = cropName, limit = limit, offset = offset)
+                val crops = cropDao.getCropsByName(name = cropName, limit = limit, offset = offset)
                 call.respond(respSuccess(data = crops))
             }
 

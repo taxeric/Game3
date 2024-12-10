@@ -79,7 +79,7 @@ class CropDaoImpl : CropDao {
         }
     }
 
-    override suspend fun getCropByName(name: String, limit: Int, offset: Int): List<CropRespDTOModel>? {
+    override suspend fun getCropsByName(name: String, limit: Int, offset: Int): List<CropRespDTOModel>? {
         return DatabaseFactory.process {
             val queryRows = transaction {
                 val rows = CropTable
@@ -93,11 +93,12 @@ class CropDaoImpl : CropDao {
             val crops = queryRows.map { row ->
                 CropRespDTOModel(
                     cropId = row[CropTable.id],
-                    name = row[CropTable.name],
-                    price = row[CropTable.price],
                     season = row[CropTable.season],
                     seedId = row[CropTable.seedId],
-                )
+                ).apply {
+                    this.name = row[CropTable.name]
+                    this.price = row[CropTable.price]
+                }
             }
             crops
         }
@@ -121,10 +122,11 @@ class CropDaoImpl : CropDao {
     private fun ResultRow.toCrop(): CropRespDTOModel {
         return CropRespDTOModel(
             cropId = this[CropTable.id],
-            name = this[CropTable.name],
-            price = this[CropTable.price],
             season = this[CropTable.season],
             seedId = this[CropTable.seedId],
-        )
+        ).apply {
+            this.name = this@toCrop[CropTable.name]
+            this.price = this@toCrop[CropTable.price]
+        }
     }
 }
